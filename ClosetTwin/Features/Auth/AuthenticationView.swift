@@ -113,6 +113,9 @@ struct FeatureRow: View {
             
             Spacer()
         }
+        .onAppear {
+            print("AuthenticationView appeared")
+        }
     }
 }
 

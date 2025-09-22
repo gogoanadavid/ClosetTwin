@@ -49,20 +49,11 @@ class AuthManager: NSObject, ObservableObject {
     // MARK: - Private Methods
     
     func checkAuthenticationStatus() {
-        Task {
-            do {
-                let status = try await cloudKitStore.checkAccountStatus()
-                if status == .available {
-                    // Check if we have a stored user profile
-                    if let storedProfile = await loadStoredProfile() {
-                        self.userProfile = storedProfile
-                        self.isAuthenticated = true
-                    }
-                }
-            } catch {
-                print("Error checking account status: \(error)")
-            }
-        }
+        // For now, always show the authentication view
+        // In a real app, you would check stored credentials here
+        print("Checking authentication status - showing auth view")
+        self.isAuthenticated = false
+        self.userProfile = nil
     }
     
     private func loadStoredProfile() async -> UserProfile? {

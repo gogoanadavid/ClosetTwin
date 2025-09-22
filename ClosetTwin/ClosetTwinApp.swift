@@ -23,10 +23,9 @@ struct ClosetTwinApp: App {
                 }
             }
             .onAppear {
+                print("ClosetTwinApp appeared - isAuthenticated: \(appSession.isAuthenticated)")
                 // Check authentication status on app launch
-                Task {
-                    await appSession.authManager.checkAuthenticationStatus()
-                }
+                appSession.authManager.checkAuthenticationStatus()
             }
         }
     }
