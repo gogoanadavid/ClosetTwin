@@ -32,13 +32,29 @@ class AuthManager: NSObject, ObservableObject {
         isLoading = true
         errorMessage = nil
         
-        let request = ASAuthorizationAppleIDProvider().createRequest()
-        request.requestedScopes = [.fullName, .email]
-        
-        let controller = ASAuthorizationController(authorizationRequests: [request])
-        controller.delegate = self
-        controller.presentationContextProvider = self
-        controller.performRequests()
+        // For development/testing purposes, use mock authentication
+        // In production, you would use the real Sign in with Apple flow
+        Task {
+            try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second delay to simulate network call
+            
+            await MainActor.run {
+                self.isLoading = false
+                
+                // Create a mock user profile for development
+                let mockProfile = UserProfile(
+                    appleUserId: "mock_user_123",
+                    displayName: "Demo User",
+                    gender: .unspecified,
+                    preferences: FitPreferences()
+                )
+                
+                self.userProfile = mockProfile
+                self.isAuthenticated = true
+                self.errorMessage = nil
+                
+                print("Mock authentication successful - User signed in as Demo User")
+            }
+        }
     }
     
     func signOut() {
@@ -50,11 +66,25 @@ class AuthManager: NSObject, ObservableObject {
     // MARK: - Private Methods
     
     func checkAuthenticationStatus() {
-        // For now, always show the authentication view
-        // In a real app, you would check stored credentials here
-        print("Checking authentication status - showing auth view")
-        self.isAuthenticated = false
-        self.userProfile = nil
+        // For development, you can set this to true to skip authentication
+        // In production, you would check stored credentials here
+        let skipAuthenticationForDevelopment = false // Set to true to skip auth
+        
+        if skipAuthenticationForDevelopment {
+            print("Development mode: Skipping authentication")
+            let mockProfile = UserProfile(
+                appleUserId: "dev_user_123",
+                displayName: "Development User",
+                gender: .unspecified,
+                preferences: FitPreferences()
+            )
+            self.userProfile = mockProfile
+            self.isAuthenticated = true
+        } else {
+            print("Checking authentication status - showing auth view")
+            self.isAuthenticated = false
+            self.userProfile = nil
+        }
     }
     
     private func loadStoredProfile() async -> UserProfile? {

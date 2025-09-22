@@ -49,24 +49,28 @@ struct AuthenticationView: View {
                     if appSession.isLoading {
                         LoadingView(message: "Signing in...")
                     } else {
-                        SignInWithAppleButton(.signIn) { request in
-                            request.requestedScopes = [.fullName, .email]
-                        } onCompletion: { result in
-                            switch result {
-                            case .success(let authorization):
-                                if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
-                                    Task {
-                                        await handleAppleSignIn(appleIDCredential)
-                                    }
-                                }
-                            case .failure(let error):
-                                print("Sign in with Apple failed: \(error.localizedDescription)")
+                        // For development, show a simple button instead of Sign in with Apple
+                        Button(action: {
+                            appSession.signInWithApple()
+                        }) {
+                            HStack {
+                                Image(systemName: "applelogo")
+                                    .foregroundColor(.white)
+                                Text("Sign in with Apple")
+                                    .font(AppTypography.headline)
+                                    .foregroundColor(.white)
                             }
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                            .background(Color.black)
+                            .cornerRadius(AppCornerRadius.sm)
+                            .padding(.horizontal, AppSpacing.lg)
                         }
-                        .signInWithAppleButtonStyle(.black)
-                        .frame(height: 50)
-                        .cornerRadius(AppCornerRadius.sm)
-                        .padding(.horizontal, AppSpacing.lg)
+                        
+                        Text("Development Mode: Mock authentication")
+                            .font(AppTypography.caption)
+                            .foregroundColor(AppColors.secondaryText)
+                            .padding(.top, AppSpacing.sm)
                     }
                     
                     if let errorMessage = appSession.errorMessage {
