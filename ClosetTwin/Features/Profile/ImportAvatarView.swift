@@ -14,7 +14,7 @@ struct ImportAvatarView: View {
     @State private var isLoading = false
     @State private var errorMessage: String?
     @State private var showingPreview = false
-    @State private var importedData: (profile: SharedAvatarData, measurements: MeasurementSet)?
+    @State private var importedData: SharedAvatar?
     
     var body: some View {
         NavigationView {
@@ -94,8 +94,7 @@ struct ImportAvatarView: View {
             .sheet(isPresented: $showingPreview) {
                 if let importedData = importedData {
                     AvatarPreviewView(
-                        profile: importedData.profile,
-                        measurements: importedData.measurements
+                        sharedAvatar: importedData
                     ) {
                         saveImportedAvatar()
                     }
@@ -130,8 +129,33 @@ struct ImportAvatarView: View {
         
         Task {
             do {
-                let cloudKitStore = CloudKitStore()
-                let importedData = try await cloudKitStore.fetchSharedAvatar(token: token)
+                // TODO: Use CloudKitStore when CloudKit is set up
+                // let cloudKitStore = CloudKitStore()
+                // let importedData = try await cloudKitStore.fetchSharedAvatar(token: token)
+                
+                // For now, create mock data
+                print("Avatar import (CloudKit disabled)")
+                let importedData = SharedAvatar(
+                    token: token,
+                    profileName: "Mock Profile",
+                    measurementSet: MeasurementSet(
+                        name: "Mock Measurements",
+                        gender: .unspecified,
+                        heightCm: 170.0,
+                        chestBustCm: 90.0,
+                        underbustCm: 80.0,
+                        waistCm: 75.0,
+                        highHipCm: 95.0,
+                        lowHipSeatCm: 100.0,
+                        shoulderWidthCm: 45.0,
+                        armLengthCm: 60.0,
+                        bicepCm: 30.0,
+                        inseamCm: 80.0,
+                        thighCm: 55.0,
+                        calfCm: 35.0
+                    ),
+                    createdAt: Date()
+                )
                 
                 await MainActor.run {
                     self.importedData = importedData
@@ -153,8 +177,8 @@ struct ImportAvatarView: View {
         
         Task {
             // Create a new measurement set from imported data
-            var measurementSet = importedData.measurements
-            measurementSet.name = "\(importedData.profile.displayName ?? "Friend")'s Measurements"
+            var measurementSet = importedData.measurementSet
+            measurementSet.name = "\(importedData.profileName)'s Measurements"
             measurementSet.createdAt = Date()
             
             await appSession.saveMeasurementSet(measurementSet)
@@ -167,8 +191,7 @@ struct ImportAvatarView: View {
 }
 
 struct AvatarPreviewView: View {
-    let profile: SharedAvatarData
-    let measurements: MeasurementSet
+    let sharedAvatar: SharedAvatar
     let onSave: () -> Void
     @Environment(\.dismiss) private var dismiss
     
@@ -194,11 +217,11 @@ struct AvatarPreviewView: View {
                                         )
                                     
                                     VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                                        Text(profile.displayName ?? "Unknown")
+                                        Text(sharedAvatar.profileName)
                                             .font(AppTypography.headline)
                                             .foregroundColor(AppColors.text)
                                         
-                                        Text(profile.gender.rawValue.capitalized)
+                                        Text(sharedAvatar.measurementSet.gender.rawValue.capitalized)
                                             .font(AppTypography.subheadline)
                                             .foregroundColor(AppColors.secondaryText)
                                     }
@@ -216,11 +239,11 @@ struct AvatarPreviewView: View {
                             .foregroundColor(AppColors.text)
                         
                         VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                            measurementRow("Height", "\(String(format: "%.1f", measurements.heightCm)) cm")
-                            measurementRow("Chest/Bust", "\(String(format: "%.1f", measurements.chestBustCm)) cm")
-                            measurementRow("Waist", "\(String(format: "%.1f", measurements.waistCm)) cm")
-                            measurementRow("Hip", "\(String(format: "%.1f", measurements.highHipCm)) cm")
-                            measurementRow("Shoulder", "\(String(format: "%.1f", measurements.shoulderWidthCm)) cm")
+                            measurementRow("Height", "\(String(format: "%.1f", sharedAvatar.measurementSet.heightCm)) cm")
+                            measurementRow("Chest/Bust", "\(String(format: "%.1f", sharedAvatar.measurementSet.chestBustCm)) cm")
+                            measurementRow("Waist", "\(String(format: "%.1f", sharedAvatar.measurementSet.waistCm)) cm")
+                            measurementRow("Hip", "\(String(format: "%.1f", sharedAvatar.measurementSet.highHipCm)) cm")
+                            measurementRow("Shoulder", "\(String(format: "%.1f", sharedAvatar.measurementSet.shoulderWidthCm)) cm")
                         }
                         .padding(AppSpacing.md)
                         .background(AppColors.secondaryBackground)

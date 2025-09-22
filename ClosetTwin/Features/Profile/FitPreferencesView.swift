@@ -101,8 +101,12 @@ struct FitPreferencesView: View {
         
         Task {
             do {
-                let cloudKitStore = CloudKitStore()
-                try await cloudKitStore.saveUserProfile(userProfile)
+                // TODO: Use CloudKitStore when CloudKit is set up
+                // let cloudKitStore = CloudKitStore()
+                // try await cloudKitStore.saveUserProfile(userProfile)
+                
+                // For now, just update the app session
+                print("Fit preferences saved (CloudKit disabled)")
                 
                 await MainActor.run {
                     appSession.userProfile = userProfile

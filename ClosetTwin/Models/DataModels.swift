@@ -233,6 +233,23 @@ struct UserProfile: Codable, Identifiable, Hashable {
     }
 }
 
+// MARK: - SharedAvatar
+struct SharedAvatar: Codable, Identifiable, Hashable {
+    var id: UUID
+    var token: String
+    var profileName: String
+    var measurementSet: MeasurementSet
+    var createdAt: Date
+    
+    init(id: UUID = UUID(), token: String, profileName: String, measurementSet: MeasurementSet, createdAt: Date = Date()) {
+        self.id = id
+        self.token = token
+        self.profileName = profileName
+        self.measurementSet = measurementSet
+        self.createdAt = createdAt
+    }
+}
+
 // MARK: - PartnerPayload
 struct PartnerPayload: Codable {
     let v: Int

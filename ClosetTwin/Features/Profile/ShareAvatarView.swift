@@ -145,18 +145,21 @@ struct ShareAvatarView: View {
             
                 // Save shared avatar to CloudKit
             do {
-                let cloudKitStore = CloudKitStore()
-                try await cloudKitStore.saveSharedAvatar(
-                    token: token,
-                    profile: profile,
-                    measurementSet: currentMeasurementSet
-                )
-                
+                // TODO: Use CloudKitStore when CloudKit is set up
+                // let cloudKitStore = CloudKitStore()
+                // try await cloudKitStore.saveSharedAvatar(
+                //     token: token,
+                //     profile: profile,
+                //     measurementSet: currentMeasurementSet
+                // )
+
                 // Update user profile with share token
                 var updatedProfile = profile
                 updatedProfile.sharedPublicToken = token
                 updatedProfile.updatedAt = Date()
-                try await cloudKitStore.saveUserProfile(updatedProfile)
+                // try await cloudKitStore.saveUserProfile(updatedProfile)
+                
+                print("Avatar sharing (CloudKit disabled) - Token: \(token)")
                 
                 // Generate QR code
                 let qrImage = QRGenerator.generateAvatarQRCode(token: token)

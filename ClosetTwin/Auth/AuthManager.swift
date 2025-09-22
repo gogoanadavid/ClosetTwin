@@ -18,7 +18,8 @@ class AuthManager: NSObject, ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
     
-    private let cloudKitStore = CloudKitStore()
+    // CloudKitStore will be initialized only when needed (after CloudKit is set up)
+    private lazy var cloudKitStore = CloudKitStore()
     
     override init() {
         super.init()
@@ -81,7 +82,7 @@ class AuthManager: NSObject, ObservableObject {
         
         do {
             // Check if user profile exists
-            var profile = try await cloudKitStore.fetchUserProfile(appleUserId: userIdentifier)
+            var profile = try await cloudKitStore.fetchUserProfile()
             
             if var existingProfile = profile {
                 // Update existing profile if needed

@@ -20,7 +20,8 @@ class AppSession: ObservableObject {
     @Published var errorMessage: String?
     
     let authManager = AuthManager()
-    private let cloudKitStore = CloudKitStore()
+    // CloudKitStore will be initialized only when needed (after CloudKit is set up)
+    private lazy var cloudKitStore = CloudKitStore()
     private var cancellables = Set<AnyCancellable>()
     
     init() {
@@ -115,7 +116,7 @@ class AppSession: ObservableObject {
         guard let profile = userProfile else { return }
         
         do {
-            try await cloudKitStore.deleteMeasurementSet(id: measurementSet.id)
+            try await cloudKitStore.deleteMeasurementSet(measurementSet.id)
             
             // Update local data
             measurementSets.removeAll { $0.id == measurementSet.id }
@@ -180,7 +181,7 @@ class AppSession: ObservableObject {
         guard let profile = userProfile else { return }
         
         do {
-            try await cloudKitStore.deleteGarment(id: garment.id)
+            try await cloudKitStore.deleteGarment(garment.id)
             
             // Update local data
             garments.removeAll { $0.id == garment.id }
