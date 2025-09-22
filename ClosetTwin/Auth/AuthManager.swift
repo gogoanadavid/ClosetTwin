@@ -8,6 +8,7 @@
 import Foundation
 import AuthenticationServices
 import CloudKit
+import Combine
 
 // MARK: - AuthManager
 @MainActor
@@ -47,7 +48,7 @@ class AuthManager: NSObject, ObservableObject {
     
     // MARK: - Private Methods
     
-    private func checkAuthenticationStatus() {
+    func checkAuthenticationStatus() {
         Task {
             do {
                 let status = try await cloudKitStore.checkAccountStatus()

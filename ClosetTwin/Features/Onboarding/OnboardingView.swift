@@ -12,6 +12,7 @@ struct OnboardingView: View {
     @EnvironmentObject var appSession: AppSession
     @State private var measurementSet = MeasurementSet(
         name: "My Measurements",
+        gender: .unspecified,
         heightCm: 170.0,
         chestBustCm: 90.0,
         underbustCm: 80.0,

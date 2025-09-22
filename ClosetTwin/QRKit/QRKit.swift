@@ -9,6 +9,7 @@ import Foundation
 import CoreImage.CIFilterBuiltins
 import AVFoundation
 import UIKit
+import Combine
 
 // MARK: - QR Generation
 struct QRGenerator {

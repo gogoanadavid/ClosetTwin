@@ -7,6 +7,7 @@
 
 import Foundation
 import CloudKit
+import Combine
 
 // MARK: - CloudKit Errors
 enum CloudKitError: Error, LocalizedError {
@@ -32,6 +33,8 @@ enum CloudKitError: Error, LocalizedError {
 // MARK: - CloudKitStore
 @MainActor
 class CloudKitStore: ObservableObject {
+    @Published var isLoading = false
+    @Published var errorMessage: String?
     private let container: CKContainer
     private let privateDatabase: CKDatabase
     private let publicDatabase: CKDatabase
